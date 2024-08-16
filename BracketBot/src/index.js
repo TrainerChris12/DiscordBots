@@ -24,4 +24,23 @@ bracketBot.on('ready', (c) => {
     console.log(`✅  ${c.user.tag} is online`)
 });
 
+
+let participantCount;
+let tournamentFormat;
+
+const participants = [];
+
+bracketBot.on('interactionCreate', (interaction) => {
+    if (!interaction.isChatInputCommand()) return;
+
+    const { commandName } = interaction;
+
+    if (commandName === 'generate-bracket') {
+        participantCount = interaction.options.get('number-of-participants').value;
+        tournamentFormat = interaction.options.get('tournament-format').value;
+        interaction.reply(`Participants: ${participantCount}, tournament: ${tournamentFormat}`);
+    }
+
+});
+
 bracketBot.login(process.env.TOKEN);
