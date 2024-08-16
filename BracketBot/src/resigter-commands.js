@@ -1,5 +1,5 @@
 require('dotenv').config();
-const { REST, Routes, ApplicationCommandOptionType } = require('discord.js');
+const { REST, Routes, ApplicationCommandOptionType, userMention} = require('discord.js');
 
 const commands = [
     {
@@ -47,6 +47,12 @@ const commands = [
                 ],
                 required: true,
             },
+            // {
+            //     name: 'participants',
+            //     description: 'Who is participating n this tournament?',
+            //     type: ApplicationCommandOptionType.User,
+            //     required: true,
+            // },
         ],
     },
 ];
@@ -67,3 +73,6 @@ const rest = new REST({ version: '10' }).setToken(process.env.TOKEN);
         console.log(`There was an error while creating application commands: ${error}`);
     }
 })();
+
+
+
