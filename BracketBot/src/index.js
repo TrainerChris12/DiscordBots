@@ -28,9 +28,9 @@ bracketBot.on('ready', (c) => {
 let participantCount;
 let tournamentFormat;
 
-const participants = [];
+let participants = [];
 
-bracketBot.on('interactionCreate', (interaction) => {
+bracketBot.on('interactionCreate', async ( interaction) => {
     if (!interaction.isChatInputCommand()) return;
 
     const { commandName } = interaction;
@@ -38,7 +38,14 @@ bracketBot.on('interactionCreate', (interaction) => {
     if (commandName === 'generate-bracket') {
         participantCount = interaction.options.get('number-of-participants').value;
         tournamentFormat = interaction.options.get('tournament-format').value;
-        interaction.reply(`Participants: ${participantCount}, tournament: ${tournamentFormat}`);
+
+        await interaction.reply({
+            content: 'Please mention the participants in the tournament.',
+            ephemeral: true,
+        });
+
+        const filter = response => response.author.id === interaction.user.id;
+        const collected = await interaction.channel.awaitMessages({})
     }
 
 });
