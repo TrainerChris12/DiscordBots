@@ -1,5 +1,6 @@
 require('dotenv').config();
-const { REST, Routes, ApplicationCommandOptionType, userMention} = require('discord.js');
+const { REST, Routes, ApplicationCommandOptionType } = require('discord.js');
+
 
 const commands = [
     {
@@ -64,12 +65,12 @@ const commands = [
                 type: ApplicationCommandOptionType.String
             },
             {
-                name: 'display-name',
-                description: 'the name you want displayed on the bracket',
+                name: 'participant-name',
+                description: 'the name of the participant you want displayed on the bracket',
                 type: ApplicationCommandOptionType.String
             },
         ]
-    }
+    },
 ];
 
 const rest = new REST({ version: '10' }).setToken(process.env.TOKEN);

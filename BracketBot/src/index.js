@@ -10,6 +10,8 @@
 */
 require('dotenv').config();
 const { Client, IntentsBitField } = require('discord.js');
+const { replyToInteraction } = require('./functions.js');
+const {addParticipant} = require("./functions.js");
 
 const bracketBot = new Client({
     intents: [
@@ -29,7 +31,7 @@ let participantCount;
 let bracketFormat;
 let tournamentName;
 
-let participants = [];
+let participantsArray = [];
 
 bracketBot.on('interactionCreate', async ( interaction) => {
     if (!interaction.isChatInputCommand()) return;
@@ -39,12 +41,81 @@ bracketBot.on('interactionCreate', async ( interaction) => {
     if (commandName === 'generate-bracket') {
         participantCount = interaction.options.get('number-of-participants').value;
         bracketFormat = interaction.options.get('tournament-format').value;
-        tournamentName = interaction.options.get('bracket-name').value;
+        const bracketNameInput = interaction.options.get('bracket-name').value;
+        /*                      FIND OUT WHY THIS THROWS THE ERROR:
+                                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+                                    [InteractionAlreadyReplied]:
+                                        The reply to this interaction has already been sent or deferred.
+          /--------------------------------------------------------------------------------------------------/
+
+        tournamentName === bracketNameInput ?
+            await replyToInteraction(interaction,
+                `This bracket already exists.`,
+                true) :
+            tournamentName = bracketNameInput;
+        await replyToInteraction(interaction, `Bracket with name: ${tournamentName} created`, true); */
+
+        //This approach works as intended
+        if (tournamentName === bracketNameInput) {
+            await replyToInteraction(interaction,
+                `This bracket already exists.`,
+                true);
+        } else {
+            tournamentName = bracketNameInput;
+            await replyToInteraction(interaction,
+                `Bracket with name: ${tournamentName} created`,
+                true);
+        }
+
+        const guild = interaction.guild;
+        await guild.members.fetch();
+
+        const members = guild.members.cache;
+        const choices = members.map(member => ({
+                label: member.user.username,
+                value: member.user.id,
+            }),
+        );
+
+        await interaction.followUp({
+            content: 'Please select the participants for the bracket:',
+            components: [
+                {
+                    type: 1, // ActionRow
+                    components: [
+                        {
+                            type: 3, // SelectMenu
+                            custom_id: 'participant-select',
+                            placeholder: 'Choose participants',
+                            options: choices,
+                            min_values: 1,
+                            max_values: choices.length
+                        }
+                    ]
+                }
+            ]
+        });
+
+        //WHY IS THIS NOT WORKING???
+        if (interaction.isStringSelectMenu() && interaction.customId === 'participant-select') {
+            const selectedParticipants = interaction.values;
+
+            participantsArray = selectedParticipants.map(userId =>
+                interaction.guild.members.cache.get(userId).user.username);
+
+            await replyToInteraction(interaction,
+                `Participants selected: ${participantsArray.join(',')}`,
+                true);
+
+        }
+
+
     }
 
-    if (commandName === 'join-bracket') {
-        const currParticipant = interaction.options.get('display-name').value;
+    else if (commandName === 'join-bracket') {
+        const currParticipant = interaction.options.get('participant-name').value;
 
+        await addParticipant(interaction, currParticipant, participantsArray);
     }
 
     else {
