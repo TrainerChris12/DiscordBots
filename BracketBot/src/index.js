@@ -26,7 +26,8 @@ bracketBot.on('ready', (c) => {
 
 
 let participantCount;
-let tournamentFormat;
+let bracketFormat;
+let tournamentName;
 
 let participants = [];
 
@@ -37,15 +38,21 @@ bracketBot.on('interactionCreate', async ( interaction) => {
 
     if (commandName === 'generate-bracket') {
         participantCount = interaction.options.get('number-of-participants').value;
-        tournamentFormat = interaction.options.get('tournament-format').value;
+        bracketFormat = interaction.options.get('tournament-format').value;
+        tournamentName = interaction.options.get('bracket-name').value;
+    }
 
+    if (commandName === 'join-bracket') {
+        const currParticipant = interaction.options.get('display-name').value;
+
+    }
+
+    else {
+        console.error(`Unknown command: ${commandName}`);
         await interaction.reply({
-            content: 'Please mention the participants in the tournament.',
+            content: `Sorry, I don't recognize this command \'${commandName}\'. Please try again.`,
             ephemeral: true,
         });
-
-        const filter = response => response.author.id === interaction.user.id;
-        const collected = await interaction.channel.awaitMessages({})
     }
 
 });

@@ -47,14 +47,29 @@ const commands = [
                 ],
                 required: true,
             },
-            // {
-            //     name: 'participants',
-            //     description: 'Who is participating n this tournament?',
-            //     type: ApplicationCommandOptionType.User,
-            //     required: true,
-            // },
+            {
+                name: 'bracket-name',
+                description: 'the name of the bracket',
+                type: ApplicationCommandOptionType.String,
+            },
         ],
     },
+    {
+        name: 'join-bracket',
+        description: 'use this to join a bracket',
+        options: [
+            {
+                name: 'name-of-bracket',
+                description: 'the tournament you want to join',
+                type: ApplicationCommandOptionType.String
+            },
+            {
+                name: 'display-name',
+                description: 'the name you want displayed on the bracket',
+                type: ApplicationCommandOptionType.String
+            },
+        ]
+    }
 ];
 
 const rest = new REST({ version: '10' }).setToken(process.env.TOKEN);
